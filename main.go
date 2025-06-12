@@ -9,13 +9,13 @@ import (
 
 func main() {
 	//ichinomiya, chiba
-	lat := 35.3727
-	lon := 140.3685
+	lat := 35.377426
+	lon := 140.390991
 	//openweather API key
 	//https://openweathermap.org/current
 	APIkey := "ab439487caabe9c49c7d15b6fdf608ef"
 
-	url := fmt.Sprintf("https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=%f&lon=%f&appid=%s", lat, lon, APIkey)
+	url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%s", lat, lon, APIkey)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -30,3 +30,4 @@ func main() {
 
 	fmt.Println(string(body))
 }
+
