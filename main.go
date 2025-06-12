@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"log"
-	"net/http"
+
+	"wave_windy/openweather_api"
 )
 
 func main() {
@@ -13,20 +13,11 @@ func main() {
 	lon := 140.390991
 	//openweather API key
 	//https://openweathermap.org/current
-	APIkey := "ab439487caabe9c49c7d15b6fdf608ef"
+	apiKey := "ab439487caabe9c49c7d15b6fdf608ef"
 	// 5days par 3hours
-	url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&appid=%s&lang=%s", lat, lon, APIkey)
-
-	resp, err := http.Get(url)
+	result, err := openweather_api.GetWeather(lat, lon, apiKey)
 	if err != nil {
-		log.Fatalf("リクエスト失敗: %v", err)
+		log.Fatalf("API取得失敗: %v", err)
 	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalf("レスポンス読み込み失敗: %v", err)
-	}
-
-	fmt.Println(string(body))
+	fmt.Println(result)
 }
