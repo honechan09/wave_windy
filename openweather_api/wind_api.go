@@ -54,7 +54,6 @@ func FormatWeatherData(body []byte) (string, error) {
 		return "データなし", nil
 	}
 	return result, nil
-	// return string(body), nil
 }
 
 // 風向への変換
