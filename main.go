@@ -20,7 +20,6 @@ func main() {
 	apiKey := os.Getenv("API_KEY_WINDY")
 	lat := 35.377426
 	lon := 140.390991
-	//openweather API key
 
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
@@ -45,22 +44,3 @@ func main() {
 	log.Println("サーバーが起動しました: http://localhost:8080")
 
 }
-
-// うねりのAPI
-// import (
-// 	"fmt"
-// 	"wave_windy/openweather_api"
-// )
-
-// func main() {
-// 	// 必要な引数をセット
-// 	lat := 35.377426
-// 	lon := 140.390991
-
-// 	result, err := openweather_api.GetSurgeWether(lat, lon)
-// 	if err != nil {
-// 		fmt.Println("エラー:", err)
-// 		return
-// 	}
-// 	fmt.Println(result)
-// }
