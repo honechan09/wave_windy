@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"wave_windy/openweather_api"
 
@@ -33,7 +34,8 @@ func main() {
 			return c.String(http.StatusInternalServerError, "API取得失敗: "+err_surge.Error())
 
 		}
-		result := result_surge + "\n" + result_windy
+		surgeStr := strings.Join(result_surge, "\n")
+		result := surgeStr + "\n" + result_windy
 		if result == "" {
 			return c.String(http.StatusInternalServerError, "結果が不足しています "+err_surge.Error())
 		}
