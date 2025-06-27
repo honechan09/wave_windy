@@ -62,3 +62,5 @@ func GetGeolan_lon(geo_resp string) (float64, float64, error) {
 	}
 	return lan, lon, nil
 }
+
+// zipcodeから緯度経度を取得するのは完了しているが、ここから風とうねりの向き関数呼び出す処理を追加すル〜
