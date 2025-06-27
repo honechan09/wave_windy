@@ -4,12 +4,15 @@ import (
 	"testing"
 )
 
-const test_zipcode = "2994301"
+const lat = 35.377426
+const lon = 140.390991
 
-func TestGeoAPI(t *testing.T) {
-	result, err := GetGeoInfo(test_zipcode)
+func TestGetSurgeWether(t *testing.T) {
+	results, err := GetSurgeWether(lat, lon)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(result)
+	for _, line := range results {
+		t.Log(line)
+	}
 }
