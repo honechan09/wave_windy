@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"wave_windy/openweather_api"
 
@@ -18,9 +19,12 @@ func main() {
 	}
 	//ichinomiya, chiba
 	apiKey := os.Getenv("API_KEY_WINDY")
-	lat := 35.377426
-	lon := 140.390991
+	zipcode := "2960002" // 鴨川の郵便番号
 
+	lat, lon, err := openweather_api.GetGeoInfo(zipcode)
+	if err != nil {
+		log.Fatal("緯度経度の取得に失敗しました: ", err)
+	}
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		result_windy, err_windy := openweather_api.GetWeather(lat, lon, apiKey)
@@ -33,7 +37,8 @@ func main() {
 			return c.String(http.StatusInternalServerError, "API取得失敗: "+err_surge.Error())
 
 		}
-		result := result_surge + "\n" + result_windy
+		surgeStr := strings.Join(result_surge, "\n")
+		result := surgeStr + "\n" + result_windy
 		if result == "" {
 			return c.String(http.StatusInternalServerError, "結果が不足しています "+err_surge.Error())
 		}

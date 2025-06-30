@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"wave_windy/entity"
 )
 
 func GetWeather(lat, lon float64, apiKey string) (string, error) {
@@ -24,25 +25,8 @@ func GetWeather(lat, lon float64, apiKey string) (string, error) {
 	return data_formatted, nil
 }
 
-type WeatherResponse struct {
-	List []WeatherItem `json:"list"`
-}
-
-// 日時、風情報の取得
-type WeatherItem struct {
-	DtTxt string   `json:"dt_txt"`
-	Wind  WindInfo `json:"wind"`
-}
-
-// 風情報の詳細を取得
-type WindInfo struct {
-	Speed float64 `json:"speed"`
-	Deg   float64 `json:"deg"`
-	Gust  float64 `json:"gust"`
-}
-
 func FormatWeatherData(body []byte) (string, error) {
-	var resp WeatherResponse
+	var resp entity.WeatherResponse
 	err := json.Unmarshal(body, &resp)
 	if err != nil {
 		return "", err
@@ -61,7 +45,7 @@ func FormatWeatherData(body []byte) (string, error) {
 }
 
 // 風向への変換
-func degToDirection(deg float64) string {
+func windDirection(deg float64) string {
 	directions := []string{
 		"北", "北北東", "北東", "東北東",
 		"東", "東南東", "南東", "南南東",
@@ -73,7 +57,7 @@ func degToDirection(deg float64) string {
 }
 
 // 風速への変換
-func FormatWindInfo(wind WindInfo) string {
+func FormatWindInfo(wind entity.WindInfo) string {
 	return fmt.Sprintf("風速: %.2f m/s, 風向: %s, 最大風速: %.2f m/s",
-		wind.Speed, degToDirection(wind.Deg), wind.Gust)
+		wind.Speed, windDirection(wind.Deg), wind.Gust)
 }
