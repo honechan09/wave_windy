@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 
@@ -31,6 +32,12 @@ func main() {
 	// トップページのみ
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "index.html", nil)
+	})
+
+	e.POST("/weather", func(c echo.Context) error {
+		zipcode := c.FormValue("city")
+		fmt.Println("受け取ったzipcode:", zipcode)
+		return c.String(http.StatusOK, "受け取りました")
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))

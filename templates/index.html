@@ -4,6 +4,13 @@
     <title>天気アプリ</title>
 </head>
 <body>
-    <h1>天気アプリへようこそ！</h1>
+    <h1>波乗り情報</h1>
+    <div>
+        <form action="/weather" method="post">
+            <label for="city">郵便番号:</label>
+            <input type="text" id="city" name="city" required>
+            <button type="submit" id="bcm">天気を取得</button>
+        </form>
+    </div>
 </body>
 </html>
