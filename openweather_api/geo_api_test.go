@@ -4,15 +4,12 @@ import (
 	"testing"
 )
 
-const lat = 35.377426
-const lon = 140.390991
+const zipcode = "2994301"
 
 func TestGetSurgeWether(t *testing.T) {
-	results, err := GetSurgeWether(lat, lon)
+	lan, lon, err := GetGeoInfo(zipcode)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, line := range results {
-		t.Log(line)
-	}
+	t.Log(lan, lon)
 }

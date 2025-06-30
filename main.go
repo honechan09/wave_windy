@@ -19,9 +19,12 @@ func main() {
 	}
 	//ichinomiya, chiba
 	apiKey := os.Getenv("API_KEY_WINDY")
-	lat := 35.377426
-	lon := 140.390991
+	zipcode := "2960002" // 鴨川の郵便番号
 
+	lat, lon, err := openweather_api.GetGeoInfo(zipcode)
+	if err != nil {
+		log.Fatal("緯度経度の取得に失敗しました: ", err)
+	}
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		result_windy, err_windy := openweather_api.GetWeather(lat, lon, apiKey)

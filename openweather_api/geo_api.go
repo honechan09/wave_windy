@@ -11,26 +11,21 @@ import (
 
 // const zipcode = "2994301"
 
-func GetGeoInfo(zipcode string) (string, error) {
+func GetGeoInfo(zipcode string) (float64, float64, error) {
 	url := fmt.Sprintf("https://geoapi.heartrails.com/api/json?method=searchByPostal&postal=%s", zipcode)
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", err
+		return 0, 0, err
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body := mustReadAll(resp.Body)
+	lat, lon, err := GetGeolan_lon(string(body))
 	if err != nil {
-		return "", err
-	}
-	lan, lon, err := GetGeolan_lon(string(body))
-	if err != nil {
-		return "", err
+		return 0, 0, err
 	}
 
-	fmt.Println("lan:", lan, "lon:", lon)
-
-	return string(body), nil
+	return lat, lon, nil
 }
 
 func GetGeolan_lon(geo_resp string) (float64, float64, error) {
@@ -63,4 +58,10 @@ func GetGeolan_lon(geo_resp string) (float64, float64, error) {
 	return lan, lon, nil
 }
 
-// zipcodeから緯度経度を取得するのは完了しているが、ここから風とうねりの向き関数呼び出す処理を追加すル〜
+func mustReadAll(r io.Reader) []byte {
+	b, err := io.ReadAll(r)
+	if err != nil {
+		panic(err) // テストや開発用。運用では適切なエラーハンドリングを
+	}
+	return b
+}
