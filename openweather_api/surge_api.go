@@ -31,6 +31,7 @@ func GetSurgeWether(lat, lon float64) ([]string, error) {
 
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
 	now := time.Now().In(jst)
+	end := now.Add(111 * time.Hour)
 
 	group := make(map[string]*entity.Agg)
 
@@ -40,7 +41,7 @@ func GetSurgeWether(lat, lon float64) ([]string, error) {
 		if err != nil {
 			continue
 		}
-		if t.Before(now) {
+		if t.Before(now) || t.After(end) {
 			continue // 過去データは除外
 		}
 		// 3時間ごとのキーを作成（例: 0:00, 3:00, ...）
