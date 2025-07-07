@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
+
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 
@@ -9,10 +10,10 @@ import (
 
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"wave_windy/entity"
-	// "os" api用
-	// "strings" api用
-	// "wave_windy/openweather_api" api用
+	"wave_windy/openweather_api"
 )
 
 func main() {
@@ -36,8 +37,15 @@ func main() {
 
 	e.POST("/weather", func(c echo.Context) error {
 		zipcode := c.FormValue("city")
-		fmt.Println("受け取ったzipcode:", zipcode)
-		return c.String(http.StatusOK, "受け取りました")
+		if zipcode == "" {
+			return c.String(http.StatusBadRequest, "郵便番号が入力されていません")
+		}
+		status, result_sea, err := InfoweatherApi(zipcode)
+		if err != nil {
+			log.Println("API取得失敗: ", err)
+			return c.String(http.StatusInternalServerError, "API取得失敗: "+err.Error())
+		}
+		return c.String(status, result_sea)
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
@@ -45,27 +53,24 @@ func main() {
 
 }
 
-// InfoweatherApi(e, zipcode)
-// func InfoweatherApi(e *echo.Echo, zipcode string) {
-// 	apiKey := os.Getenv("API_KEY_WINDY")
-// 	lat, lon, err := openweather_api.GetGeoInfo(zipcode)
-// 	if err != nil {
-// 		log.Fatal("緯度経度の取得に失敗しました: ", err)
-// 	}
-// 	e.GET("/", func(c echo.Context) error {
-// 		result_windy, err_windy := openweather_api.GetWeather(lat, lon, apiKey)
-// 		result_surge, err_surge := openweather_api.GetSurgeWether(lat, lon)
-// 		if err_windy != nil {
-// 			return c.String(http.StatusInternalServerError, "API取得失敗: "+err_windy.Error())
-// 		}
-// 		if err_surge != nil {
-// 			return c.String(http.StatusInternalServerError, "API取得失敗: "+err_surge.Error())
-// 		}
-// 		surgeStr := strings.Join(result_surge, "\n")
-// 		result := surgeStr + "\n" + result_windy
-// 		if result == "" {
-// 			return c.String(http.StatusInternalServerError, "結果が不足しています "+err_surge.Error())
-// 		}
-// 		return c.String(http.StatusOK, result)
-// 	})
-// }
+func InfoweatherApi(zipcode string) (int, string, error) {
+	apiKey := os.Getenv("API_KEY_WINDY")
+	lat, lon, err := openweather_api.GetGeoInfo(zipcode)
+	if err != nil {
+		return http.StatusInternalServerError, "", err
+	}
+	result_windy, err_windy := openweather_api.GetWeather(lat, lon, apiKey)
+	result_surge, err_surge := openweather_api.GetSurgeWether(lat, lon)
+	if err_windy != nil {
+		return http.StatusInternalServerError, "", err_windy
+	}
+	if err_surge != nil {
+		return http.StatusInternalServerError, "", err_surge
+	}
+	surgeStr := strings.Join(result_surge, "\n")
+	result := surgeStr + "\n" + result_windy
+	if result == "" {
+		return http.StatusInternalServerError, "", err_surge
+	}
+	return http.StatusOK, result, nil
+}
