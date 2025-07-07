@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 	"wave_windy/entity"
 )
 
@@ -32,7 +33,19 @@ func FormatWeatherData(body []byte) (string, error) {
 		return "", err
 	}
 	result := ""
+
+	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+	now := time.Now().In(jst)
+
 	for _, item := range resp.List {
+		// item.DtTxtは "2006-01-02 15:04:05" 形式
+		t, err := time.ParseInLocation("2006-01-02 15:04:05", item.DtTxt, jst)
+		if err != nil {
+			continue // パースできなければスキップ
+		}
+		if t.Before(now) {
+			continue // 過去データはスキップ
+		}
 		result += fmt.Sprintf(
 			"日時: %s, %s\n",
 			item.DtTxt, FormatWindInfo(item.Wind),

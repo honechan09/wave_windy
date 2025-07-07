@@ -68,6 +68,8 @@ func InfoweatherApi(zipcode string) (int, string, error) {
 		return http.StatusInternalServerError, "", err_surge
 	}
 	surgeStr := strings.Join(result_surge, "\n")
+	log.Println("surgeStr:", surgeStr)
+	log.Println("result_windy:", result_windy)
 	result := surgeStr + "\n" + result_windy
 	if result == "" {
 		return http.StatusInternalServerError, "", err_surge
