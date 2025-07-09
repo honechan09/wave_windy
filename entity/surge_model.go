@@ -9,3 +9,9 @@ type HourlyData struct {
 type SurgeResponse struct {
 	Hourly HourlyData `json:"hourly"`
 }
+
+type Agg struct {
+	Count     int
+	HeightSum float64
+	DirSum    float64
+}
