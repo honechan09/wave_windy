@@ -12,9 +12,78 @@
             <button type="submit" id="bcm">天気を取得</button>
         </form>
     </div>
-    <div>
-        <!-- 情報表示部分 -->
-    </div>
+    <!-- 風向・風速チャートのサンプル -->
+    <div id="wind-chart"></div>
+
 </body>
 </html>
 <!-- トップページ -->
+
+
+<!-- AIにより作成　これをベースにうねりと風向きの表示を作成 -->
+<script>
+    // サンプルデータ
+    const windData = [
+    { time: "2025-07-09 21:00", speed: 1.44, dir: "南" },
+    { time: "2025-07-10 00:00", speed: 3.32, dir: "南南東" },
+    { time: "2025-07-10 03:00", speed: 3.61, dir: "南東" },
+    ];
+
+    // 風向→角度変換
+    const dirToDeg = {
+    "北": 0, "北北東": 22.5, "北東": 45, "東北東": 67.5, "東": 90,
+    "東南東": 112.5, "南東": 135, "南南東": 157.5, "南": 180,
+    "南南西": 202.5, "南西": 225, "西南西": 247.5, "西": 270,
+    "西北西": 292.5, "北西": 315, "北北西": 337.5
+    };
+
+    const chart = document.getElementById('wind-chart');
+    chart.style.display = 'flex';
+    chart.style.flexWrap = 'wrap';
+
+    windData.forEach(d => {
+    const deg = dirToDeg[d.dir] || 0;
+    const length = 20 + d.speed * 10; // 風速で矢印長さ調整
+    const color = d.speed > 5 ? "#e74c3c" : "#3498db"; // 強風は赤、通常は青
+
+    // SVG矢印
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", 60);
+    svg.setAttribute("height", 60);
+    svg.style.margin = "8px";
+
+    // 矢印本体
+    const arrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    arrow.setAttribute("x1", 30);
+    arrow.setAttribute("y1", 30);
+    arrow.setAttribute("x2", 30);
+    arrow.setAttribute("y2", 30 - length);
+    arrow.setAttribute("stroke", color);
+    arrow.setAttribute("stroke-width", 4);
+    arrow.setAttribute("marker-end", "url(#arrowhead)");
+
+    // 矢印ヘッド
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    defs.innerHTML = `
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="${color}" />
+        </marker>
+    `;
+    svg.appendChild(defs);
+
+    // 回転
+    arrow.setAttribute("transform", `rotate(${deg},30,30)`);
+    svg.appendChild(arrow);
+
+    // ラベル
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", 30);
+    label.setAttribute("y", 55);
+    label.setAttribute("text-anchor", "middle");
+    label.setAttribute("font-size", "10");
+    label.textContent = `${d.time.split(' ')[1]} ${d.dir} ${d.speed}m/s`;
+    svg.appendChild(label);
+
+    chart.appendChild(svg);
+    });
+</script>
